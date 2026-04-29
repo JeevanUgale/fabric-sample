@@ -26,7 +26,7 @@ function queryInstalled() {
   { set +x; } 2>/dev/null
   cat log.txt
   verifyResult $res "Query installed on peer0.org${ORG} has failed"
-  successln "Query installed successful on peer0.org${ORG} on channel"
+  successln "Query installed successful on peer1.org${ORG} on channel"
 }
 
 # approveForMyOrg VERSION PEER ORG
@@ -39,7 +39,7 @@ function approveForMyOrg() {
   { set +x; } 2>/dev/null
   cat log.txt
   verifyResult $res "Chaincode definition approved on peer0.org${ORG} on channel '$CHANNEL_NAME' failed"
-  successln "Chaincode definition approved on peer0.org${ORG} on channel '$CHANNEL_NAME'"
+  successln "Chaincode definition approved on peer1.org${ORG} on channel '$CHANNEL_NAME'"
 }
 
 # checkCommitReadiness VERSION PEER ORG

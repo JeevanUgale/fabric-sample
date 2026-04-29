@@ -17,8 +17,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 ORDERER_CA=${DIR}/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
 PEER0_ORG1_CA=${DIR}/test-network/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-PEER0_ORG2_CA=${DIR}/test-network/organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
-PEER0_ORG3_CA=${DIR}/test-network/organizations/peerOrganizations/org3.example.com/tlsca/tlsca.org3.example.com-cert.pem
 
 
 if [[ ${ORG,,} == "org1" || ${ORG,,} == "digibank" ]]; then
@@ -36,7 +34,7 @@ elif [[ ${ORG,,} == "org2" || ${ORG,,} == "magnetocorp" ]]; then
    CORE_PEER_TLS_ROOTCERT_FILE=${DIR}/test-network/organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
 
 else
-   echo "Unknown \"$ORG\", please choose Org1/Digibank or Org2/Magnetocorp"
+   echo "Unknown \"$ORG\", please choose Org1 only"
    echo "For example to get the environment variables to set upa Org2 shell environment run:  ./setOrgEnv.sh Org2"
    echo
    echo "This can be automated to set them as well with:"
@@ -49,8 +47,6 @@ fi
 echo "CORE_PEER_TLS_ENABLED=true"
 echo "ORDERER_CA=${ORDERER_CA}"
 echo "PEER0_ORG1_CA=${PEER0_ORG1_CA}"
-echo "PEER0_ORG2_CA=${PEER0_ORG2_CA}"
-echo "PEER0_ORG3_CA=${PEER0_ORG3_CA}"
 
 echo "CORE_PEER_MSPCONFIGPATH=${CORE_PEER_MSPCONFIGPATH}"
 echo "CORE_PEER_ADDRESS=${CORE_PEER_ADDRESS}"
