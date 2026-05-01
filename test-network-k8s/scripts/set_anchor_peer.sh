@@ -11,7 +11,7 @@ function fetch_channel_config() {
   echo "Fetching the most recent configuration block for channel ${CHANNEL_NAME}"
   peer channel \
     fetch config config_block.pb \
-    -o org0-orderer1:6050 \
+    -o org1-orderer:6050 \
     -c ${CHANNEL_NAME} \
     --tls --cafile ${ORDERER_TLS_CA_FILE}
 
@@ -70,7 +70,7 @@ function create_anchor_peer_update() {
 function update_anchor_peer() {
   peer channel \
     update -f anchors.tx \
-    -o org0-orderer1:6050 \
+    -o org1-orderer:6050 \
     -c ${CHANNEL_NAME} \
     --tls --cafile ${ORDERER_TLS_CA_FILE} >& log.txt
 
@@ -101,7 +101,7 @@ PEER_NAME=$3
 ORG_NAME=org${ORG_NUM}
 ANCHOR_PEER_HOST=${ORG_NAME}-${PEER_NAME}
 ANCHOR_PEER_PORT=7051
-ORDERER_TLS_CA_FILE=/var/hyperledger/fabric/organizations/ordererOrganizations/org0.example.com/msp/tlscacerts/org0-tls-ca.pem
+ORDERER_TLS_CA_FILE=/var/hyperledger/fabric/organizations/ordererOrganizations/org1.example.com/msp/tlscacerts/org1-tls-ca.pem
 
 export CORE_PEER_LOCALMSPID=Org${ORG_NUM}MSP
 

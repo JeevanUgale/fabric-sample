@@ -37,9 +37,7 @@ function channel_up() {
 function register_org_admins() {
   push_fn "Registering org Admin users"
 
-  register_org_admin org0 org0admin org0adminpw
   register_org_admin org1 org1admin org1adminpw
-  register_org_admin org2 org2admin org2adminpw
 
   pop_fn
 }
@@ -67,9 +65,8 @@ function register_org_admin() {
 function enroll_org_admins() {
   push_fn "Enrolling org Admin users"
 
-  enroll_org_admin orderer  org0 org0admin org0adminpw
+  enroll_org_admin orderer  org1 org1admin org1adminpw
   enroll_org_admin peer     org1 org1admin org1adminpw
-  enroll_org_admin peer     org2 org2admin org2adminpw
 
   pop_fn
 }
@@ -146,16 +143,10 @@ EOF
 function create_channel_MSP() {
   push_fn "Creating channel MSP"
 
-  create_channel_org_MSP org0 orderer $ORG0_NS
+  create_channel_org_MSP org1 orderer $ORG1_NS
   create_channel_org_MSP org1 peer $ORG1_NS
-  create_channel_org_MSP org2 peer $ORG2_NS
 
-  extract_orderer_cert org0 orderer1
-  extract_orderer_cert org0 orderer2
-  extract_orderer_cert org0 orderer3
-  if  [ "${ORDERER_TYPE}" == "bft" ]; then
-      extract_orderer_cert org0 orderer4
-  fi
+  extract_orderer_cert org1 orderer
 
   pop_fn
 }
@@ -192,7 +183,7 @@ function create_channel_org_MSP() {
 function extract_orderer_cert() {
   local org=$1
   local orderer=$2
-  local ns=$ORG0_NS
+  local ns=$ORG1_NS
 
   echo "Extracting cert for $org $orderer"
 
@@ -217,15 +208,8 @@ function extract_orderer_cert() {
 function create_genesis_block() {
   push_fn "Creating channel genesis block"
 
-  # Define the default channel configtx and profile
-  local profile="TwoOrgsApplicationGenesis"
-  cat ${PWD}/config/org0/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
-
-  # Overwrite configtx and profile for bft orderer
-  if  [ "${ORDERER_TYPE}" == "bft" ]; then
-    cat ${PWD}/config/org0/bft/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
-    profile="ChannelUsingBFT"
-  fi
+  local profile="OneOrgApplicationGenesis"
+  cat ${PWD}/config/org1/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
 
   FABRIC_CFG_PATH=${TEMP_DIR} \
     configtxgen \
@@ -233,22 +217,15 @@ function create_genesis_block() {
       -channelID    $CHANNEL_NAME \
       -outputBlock  ${TEMP_DIR}/genesis_block.pb
 
-  # configtxgen -inspectBlock ${TEMP_DIR}/genesis_block.pb
-
   pop_fn
 }
 
 function join_channel_orderers() {
   push_fn "Joining orderers to channel ${CHANNEL_NAME}"
 
-  join_channel_orderer org0 orderer1
-  join_channel_orderer org0 orderer2
-  join_channel_orderer org0 orderer3
-  if  [ "${ORDERER_TYPE}" == "bft" ]; then
-    join_channel_orderer org0 orderer4
-  fi
+  join_channel_orderer org1 orderer
 
-  # todo: readiness / liveiness equivalent for channel?  Needs a little bit to settle before peers can join.
+  # todo: readiness / liveliness equivalent for channel? Needs a little bit to settle before peers can join.
   sleep 10
 
   pop_fn
@@ -272,16 +249,14 @@ function join_channel_orderer() {
 
 function join_channel_peers() {
   join_org_peers org1
-  join_org_peers org2
 }
 
 function join_org_peers() {
   local org=$1
   push_fn "Joining ${org} peers to channel ${CHANNEL_NAME}"
 
-  # Join peers to channel
+  join_channel_peer $org peer0
   join_channel_peer $org peer1
-  join_channel_peer $org peer2
 
   pop_fn
 }
@@ -294,8 +269,8 @@ function join_channel_peer() {
 
   peer channel join \
     --blockpath   ${TEMP_DIR}/genesis_block.pb \
-    --orderer     org0-orderer1.${DOMAIN} \
+    --orderer     org1-orderer.${DOMAIN} \
     --connTimeout ${ORDERER_TIMEOUT} \
     --tls         \
-    --cafile      ${TEMP_DIR}/channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
+    --cafile      ${TEMP_DIR}/channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
 }
