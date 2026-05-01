@@ -66,8 +66,24 @@ Application: &ApplicationDefaults
   Capabilities:
     <<: *ApplicationCapabilities
 
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
 Orderer: &OrdererDefaults
   OrdererType: etcdraft
+  Addresses:
+    - org1-orderer.${ORG1_NS}.svc.cluster.local:6050
   EtcdRaft:
     Consenters:
       - Host: org1-orderer.${ORG1_NS}.svc.cluster.local
@@ -107,6 +123,8 @@ Consortiums:
 Profiles:
   OneOrgApplicationGenesis:
     Consortium: SampleConsortium
+    Channel:
+      <<: *ChannelDefaults
     Application:
       <<: *ApplicationDefaults
       Organizations:
