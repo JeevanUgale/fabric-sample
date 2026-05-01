@@ -70,7 +70,7 @@ Orderer: &OrdererDefaults
   OrdererType: etcdraft
   EtcdRaft:
     Consenters:
-      - Host: org1-orderer
+      - Host: org1-orderer.${ORG1_NS}.svc.cluster.local
         Port: 6050
         ClientTLSCert: ./channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
         ServerTLSCert: ./channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
