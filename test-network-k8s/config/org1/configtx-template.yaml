@@ -122,14 +122,22 @@ Consortiums:
 
 Profiles:
   OneOrgApplicationGenesis:
-    Consortium: SampleConsortium
-    Channel:
-      <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Org1
     Orderer:
-      <<: *OrdererDefaults
+      OrdererType: etcdraft
       Organizations:
         - *OrdererOrg
+      EtcdRaft:
+        Consenters:
+          - Host: org1-orderer
+            Port: 7050
+            ClientTLSCert: path
+            ServerTLSCert: path
+
+    Application:
+      Organizations:
+        - *Org1
+
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *Org1
