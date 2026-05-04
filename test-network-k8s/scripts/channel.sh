@@ -209,10 +209,12 @@ function create_genesis_block() {
   push_fn "Creating channel genesis block"
 
   local profile="OneOrgApplicationGenesis"
+  export NS=${NS:-${KUBE_NAMESPACE:-${NETWORK_NAME}}}
   export ORG1_NS=${ORG1_NS:-${NS}}
-  envsubst < ${PWD}/config/org1/configtx-template.yaml > ${TEMP_DIR}/configtx.yaml
+  export TEMP_DIR_CONFIG=${TEMP_DIR}
+  envsubst < ${PWD}/config/org1/configtx-template.yaml > ${PWD}/config/org1/configtx.yaml
 
-  FABRIC_CFG_PATH=${TEMP_DIR} \
+  FABRIC_CFG_PATH=${PWD}/config/org1 \
     configtxgen \
       -profile      $profile \
       -channelID    $CHANNEL_NAME \

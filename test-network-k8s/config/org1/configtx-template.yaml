@@ -1,8 +1,11 @@
+# IMPORTANT:
+# DO NOT ADD "Channel:" OR "&ChannelDefaults"
+# These break configtxgen in Fabric v2.5+
 Organizations:
   - &OrdererOrg
     Name: OrdererOrg
     ID: OrdererMSP
-    MSPDir: ./channel-msp/ordererOrganizations/org1/msp
+    MSPDir: ${TEMP_DIR_CONFIG}/channel-msp/ordererOrganizations/org1/msp
     Policies:
       Readers:
         Type: Signature
@@ -19,7 +22,7 @@ Organizations:
   - &Org1
     Name: Org1MSP
     ID: Org1MSP
-    MSPDir: ./channel-msp/peerOrganizations/org1/msp
+    MSPDir: ${TEMP_DIR_CONFIG}/channel-msp/peerOrganizations/org1/msp
     Policies:
       Readers:
         Type: Signature
@@ -66,20 +69,6 @@ Application: &ApplicationDefaults
   Capabilities:
     <<: *ApplicationCapabilities
 
-# Channel: &ChannelDefaults
-#   Policies:
-#     Readers:
-#       Type: ImplicitMeta
-#       Rule: "ANY Readers"
-#     Writers:
-#       Type: ImplicitMeta
-#       Rule: "ANY Writers"
-#     Admins:
-#       Type: ImplicitMeta
-#       Rule: "MAJORITY Admins"
-#   Capabilities:
-#     <<: *ChannelCapabilities
-
 Orderer: &OrdererDefaults
   OrdererType: etcdraft
   Addresses:
@@ -88,8 +77,8 @@ Orderer: &OrdererDefaults
     Consenters:
       - Host: org1-orderer.${ORG1_NS}.svc.cluster.local
         Port: 6050
-        ClientTLSCert: ./channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
-        ServerTLSCert: ./channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
+        ClientTLSCert: ${TEMP_DIR_CONFIG}/channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
+        ServerTLSCert: ${TEMP_DIR_CONFIG}/channel-msp/ordererOrganizations/org1/orderers/org1-orderer/tls/signcerts/tls-cert.pem
     Options:
       TickInterval: 2500ms
       ElectionTick: 5
@@ -115,29 +104,13 @@ Orderer: &OrdererDefaults
   Capabilities:
     <<: *OrdererCapabilities
 
-Consortiums:
-  SampleConsortium:
-    Organizations:
-      - *Org1
-
 Profiles:
   OneOrgApplicationGenesis:
     Orderer:
-      OrdererType: etcdraft
+      <<: *OrdererDefaults
       Organizations:
         - *OrdererOrg
-      EtcdRaft:
-        Consenters:
-          - Host: org1-orderer
-            Port: 7050
-            ClientTLSCert: path
-            ServerTLSCert: path
-
     Application:
+      <<: *ApplicationDefaults
       Organizations:
         - *Org1
-
-    Consortiums:
-      SampleConsortium:
-        Organizations:
-          - *Org1
