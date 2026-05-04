@@ -101,15 +101,33 @@ Orderer: &OrdererDefaults
     Admins:
       Type: ImplicitMeta
       Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
   Capabilities:
     <<: *OrdererCapabilities
 
 Profiles:
   OneOrgApplicationGenesis:
+    Capabilities:
+      <<: *ChannelCapabilities
+
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+
     Orderer:
       <<: *OrdererDefaults
       Organizations:
         - *OrdererOrg
+
     Application:
       <<: *ApplicationDefaults
       Organizations:
